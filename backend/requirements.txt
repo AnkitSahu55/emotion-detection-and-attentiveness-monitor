@@ -1,0 +1,6 @@
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+websockets==14.1
+mediapipe>=1.0.0
+opencv-python-headless>=5.0.0
+psutil>=6.0.0
