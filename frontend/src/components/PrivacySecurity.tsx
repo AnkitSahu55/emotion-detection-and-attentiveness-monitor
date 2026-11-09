@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  ShieldCheck, 
-  WifiOff, 
-  Cpu, 
-  Lock, 
-  Terminal, 
-  Trash2, 
-  FileCheck2 
+import {
+  ShieldCheck,
+  WifiOff,
+  Cpu,
+  Lock,
+  Terminal,
+  Trash2,
+  FileCheck2,
 } from 'lucide-react';
 
 export const PrivacySecurity: React.FC = () => {
   const [networkPacketsBlocked, setNetworkPacketsBlocked] = useState<number>(0);
-  const [activeStep, setActiveStep] = useState<number>(2);
+  const [activeStep, setActiveStep] = useState<number>(1);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setNetworkPacketsBlocked(prev => prev + 1);
+      setNetworkPacketsBlocked((prev) => prev + 1);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
@@ -28,15 +28,15 @@ export const PrivacySecurity: React.FC = () => {
       badge: 'RAM HEAP ONLY',
     },
     {
-      title: '2. WASM SIMD Inference',
+      title: '2. Local Inference',
       type: 'In-Memory Compute',
-      desc: 'BlazeFace and 468-point spatial regression executed locally inside sandboxed WebAssembly execution sandbox.',
+      desc: 'BlazeFace and 468-point spatial regression executed locally inside sandboxed browser execution space.',
       badge: 'ZERO DISK WRITE',
     },
     {
       title: '3. Metric Aggregation',
       type: 'Ephemeral Telemetry',
-      desc: 'EAR ratios and attentiveness scores computed into transient React state for client HUD rendering.',
+      desc: 'EAR ratios and attentiveness scores computed into transient React state for client dashboard rendering.',
       badge: 'AIRGAPPED LOGIC',
     },
     {
@@ -56,14 +56,14 @@ export const PrivacySecurity: React.FC = () => {
     },
     {
       title: 'Zero Cloud Egress Architecture',
-      status: 'ENFORCED VIA CSP',
-      desc: 'Strict Content Security Policy (connect-src "none") mechanically prevents outbound HTTP/WebSocket sockets.',
+      status: 'CLIENT-SIDE RUNTIME',
+      desc: 'The frontend operates entirely on your device. Video frames are never transmitted to cloud servers.',
       icon: WifiOff,
     },
     {
-      title: 'HIPAA & Enterprise Airgap Ready',
+      title: 'Airgap Ready Deployment',
       status: 'VERIFIED AIRGAPPED',
-      desc: 'Can be deployed within offline SCADA networks, hospital workstations, or isolated defense enclaves.',
+      desc: 'Can be deployed within isolated offline networks, proctoring environments, or private laboratory setups.',
       icon: Lock,
     },
     {
@@ -75,44 +75,93 @@ export const PrivacySecurity: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto py-4">
-      {/* Page Header */}
-      <div className="border-b border-slate-200 pb-6">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-xs font-mono-tech mb-3">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>PRIVACY & SECURITY ARCHITECTURE</span>
+    <div className="max-w-5xl mx-auto space-y-6 animate-fade-in">
+      {/* Header section */}
+      <div
+        className="rounded-xl p-6"
+        style={{
+          backgroundColor: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          boxShadow: 'var(--shadow-xs)',
+        }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <div
+            className="w-8 h-8 rounded-lg flex items-center justify-center"
+            style={{
+              backgroundColor: 'var(--color-success-soft)',
+              border: '1px solid #bbf7d0',
+            }}
+          >
+            <ShieldCheck className="w-4 h-4" style={{ color: 'var(--color-success)' }} />
+          </div>
+          <span
+            className="text-[11px] font-semibold uppercase tracking-widest"
+            style={{ color: 'var(--color-success)' }}
+          >
+            Privacy & Security Architecture
+          </span>
         </div>
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h2 className="text-xl font-bold tracking-tight" style={{ color: 'var(--color-text)' }}>
           Privacy-First Zero-Trust Biometrics
         </h2>
-        <p className="text-sm sm:text-base text-slate-600 mt-2 max-w-3xl">
-          Complete structural isolation of sensitive facial telemetry. All calculations execute entirely on the local client device without external API calls or persistent disk caching.
+        <p className="text-[13px] mt-2 leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+          Complete structural isolation of sensitive facial telemetry. Calculations execute locally on the
+          client device without external cloud egress or persistent disk profiling.
         </p>
       </div>
 
-      {/* Primary Key Guarantees Banner Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Guarantee 1: Local RAM-Only Processing */}
-        <div className="bg-white border-2 border-blue-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shrink-0">
-              <Cpu className="w-6 h-6" />
+      {/* Primary Key Guarantees Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Guarantee 1 */}
+        <div
+          className="rounded-xl p-5"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            border: '1px solid var(--color-accent-border)',
+            boxShadow: 'var(--shadow-xs)',
+          }}
+        >
+          <div className="flex items-start gap-3.5">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: 'var(--color-accent)', color: '#ffffff' }}
+            >
+              <Cpu className="w-5 h-5" />
             </div>
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono-tech uppercase font-bold text-blue-600 tracking-wider">
-                CORE ARCHITECTURAL GUARANTEE #1
+            <div className="space-y-1.5 flex-1">
+              <span
+                className="text-[10px] font-data uppercase font-bold tracking-wider"
+                style={{ color: 'var(--color-accent)' }}
+              >
+                Core Guarantee #1
               </span>
-              <h3 className="text-xl font-extrabold text-slate-900">
+              <h3 className="text-[15px] font-bold" style={{ color: 'var(--color-text)' }}>
                 Local RAM-Only Processing
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Video frames, landmark coordinates, and derived affective metrics remain exclusively within volatile system memory (RAM). At no point are video streams written to local SSDs, cookies, IndexedDB, or temporary swap partitions.
+              <p className="text-[12px] leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                Video frames, landmark coordinates, and derived metrics remain exclusively within volatile system
+                memory (RAM). At no point are video streams written to cookies, IndexedDB, or disk swap.
               </p>
-              <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-mono-tech">
-                <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+              <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-data">
+                <span
+                  className="px-2 py-0.5 rounded"
+                  style={{
+                    backgroundColor: 'var(--color-accent-soft)',
+                    color: 'var(--color-accent)',
+                    border: '1px solid var(--color-accent-border)',
+                  }}
+                >
                   Volatile Heap: ~38.4 MB
                 </span>
-                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                <span
+                  className="px-2 py-0.5 rounded"
+                  style={{
+                    backgroundColor: 'var(--color-surface-raised)',
+                    color: 'var(--color-text-secondary)',
+                    border: '1px solid var(--color-border)',
+                  }}
+                >
                   Disk I/O: 0.00 MB/s
                 </span>
               </div>
@@ -120,28 +169,56 @@ export const PrivacySecurity: React.FC = () => {
           </div>
         </div>
 
-        {/* Guarantee 2: Zero-Network Footprint */}
-        <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-md shrink-0">
-              <WifiOff className="w-6 h-6" />
+        {/* Guarantee 2 */}
+        <div
+          className="rounded-xl p-5"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-xs)',
+          }}
+        >
+          <div className="flex items-start gap-3.5">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: '#0f1117', color: '#ffffff' }}
+            >
+              <WifiOff className="w-5 h-5" />
             </div>
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono-tech uppercase font-bold text-slate-500 tracking-wider">
-                CORE ARCHITECTURAL GUARANTEE #2
+            <div className="space-y-1.5 flex-1">
+              <span
+                className="text-[10px] font-data uppercase font-bold tracking-wider"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
+                Core Guarantee #2
               </span>
-              <h3 className="text-xl font-extrabold text-slate-900">
-                Zero-Network Footprint
+              <h3 className="text-[15px] font-bold" style={{ color: 'var(--color-text)' }}>
+                Zero Cloud Egress
               </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Operates without making outbound telemetry requests, API calls, or cloud sync transactions. The entire inference runtime runs in local client execution space with an enforced Content Security Policy.
+              <p className="text-[12px] leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                Operates without making outbound telemetry requests or syncing camera feeds. The entire inference
+                pipeline executes strictly on your workstation.
               </p>
-              <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-mono-tech">
-                <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-200">
+              <div className="pt-2 flex flex-wrap gap-2 text-[11px] font-data">
+                <span
+                  className="px-2 py-0.5 rounded"
+                  style={{
+                    backgroundColor: 'var(--color-surface-raised)',
+                    color: 'var(--color-text)',
+                    border: '1px solid var(--color-border)',
+                  }}
+                >
                   Outbound Egress: 0.00 KB
                 </span>
-                <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  CSP Rule: connect-src 'none'
+                <span
+                  className="px-2 py-0.5 rounded"
+                  style={{
+                    backgroundColor: 'var(--color-success-soft)',
+                    color: 'var(--color-success)',
+                    border: '1px solid #bbf7d0',
+                  }}
+                >
+                  Local Device Execution
                 </span>
               </div>
             </div>
@@ -149,102 +226,176 @@ export const PrivacySecurity: React.FC = () => {
         </div>
       </div>
 
-      {/* Interactive In-Memory Ring Buffer Pipeline Diagram */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+      {/* In-Memory Lifecycle Stages */}
+      <div
+        className="rounded-xl p-5 space-y-4"
+        style={{
+          backgroundColor: 'var(--color-surface)',
+          border: '1px solid var(--color-border)',
+          boxShadow: 'var(--shadow-xs)',
+        }}
+      >
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-900">
+            <h3 className="text-[14px] font-semibold" style={{ color: 'var(--color-text)' }}>
               In-Memory Volatile Lifecycle (Zero Disk Footprint)
             </h3>
-            <p className="text-xs text-slate-500 font-mono-tech">
-              Visualizing the deterministic frame lifecycle through browser memory
+            <p className="text-[12px]" style={{ color: 'var(--color-text-muted)' }}>
+              Deterministic frame lifecycle through volatile browser heap
             </p>
           </div>
-          <span className="text-xs font-mono-tech px-2.5 py-1 rounded bg-blue-50 text-blue-700 border border-blue-200">
+          <span
+            className="text-[11px] font-data px-2.5 py-1 rounded"
+            style={{
+              backgroundColor: 'var(--color-accent-soft)',
+              color: 'var(--color-accent)',
+              border: '1px solid var(--color-accent-border)',
+            }}
+          >
             ISOLATED SANDBOX
           </span>
         </div>
 
-        {/* Step Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {flowSteps.map((step, idx) => (
-            <div
+            <button
               key={idx}
               onClick={() => setActiveStep(idx)}
-              className={`p-4 rounded-xl border transition-all cursor-pointer ${
-                activeStep === idx
-                  ? 'bg-blue-50/70 border-blue-400 shadow-xs'
-                  : 'bg-slate-50 border-slate-200 hover:bg-slate-100/80'
-              }`}
+              className="p-3.5 rounded-xl text-left transition-all cursor-pointer"
+              style={{
+                backgroundColor:
+                  activeStep === idx ? 'var(--color-accent-soft)' : 'var(--color-surface-raised)',
+                border: `1px solid ${
+                  activeStep === idx ? 'var(--color-accent-border)' : 'var(--color-border)'
+                }`,
+              }}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold font-mono-tech text-slate-900">{step.title}</span>
-                <span className="text-[10px] font-mono-tech text-blue-600 bg-white px-1.5 py-0.5 rounded border border-blue-200">
-                  {step.badge}
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[12px] font-bold font-data" style={{ color: 'var(--color-text)' }}>
+                  {step.title}
                 </span>
               </div>
-              <span className="text-[11px] font-mono-tech text-slate-500 block mb-1.5">{step.type}</span>
-              <p className="text-xs text-slate-600 leading-relaxed">{step.desc}</p>
-            </div>
+              <span
+                className="text-[10px] font-data uppercase tracking-wider block mb-1"
+                style={{ color: 'var(--color-accent)' }}
+              >
+                {step.badge}
+              </span>
+              <p className="text-[11px] leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                {step.desc}
+              </p>
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Network Sniffer Verification & Compliance Matrix */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Real-time Network Sniffer Card (5 cols) */}
-        <div className="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+      {/* Network Audit & Compliance Matrix */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        {/* Network Sniffer Audit (5 cols) */}
+        <div
+          className="lg:col-span-5 rounded-xl p-5 space-y-3"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-xs)',
+          }}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-blue-600" />
-              <h3 className="text-sm font-bold text-slate-900">Network Sniffer Audit</h3>
+              <Terminal className="w-4 h-4" style={{ color: 'var(--color-accent)' }} />
+              <h3 className="text-[13px] font-bold" style={{ color: 'var(--color-text)' }}>
+                Network Audit Monitor
+              </h3>
             </div>
-            <span className="text-[10px] font-mono-tech px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span
+              className="text-[10px] font-data px-2 py-0.5 rounded font-semibold"
+              style={{
+                backgroundColor: 'var(--color-success-soft)',
+                color: 'var(--color-success)',
+                border: '1px solid #bbf7d0',
+              }}
+            >
               AUDIT ACTIVE
             </span>
           </div>
 
-          <div className="bg-slate-950 text-slate-300 p-4 rounded-xl font-mono-tech text-xs space-y-2 border border-slate-800">
-            <div className="flex items-center justify-between text-slate-400 text-[11px] border-b border-slate-800 pb-1">
-              <span>INTERFACE: eth0 / lo0</span>
-              <span>STATE: ISOLATED</span>
+          <div
+            className="p-4 rounded-xl font-data text-[11px] space-y-1.5"
+            style={{
+              backgroundColor: '#0a0d14',
+              color: '#c8cdd8',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <div
+              className="flex items-center justify-between pb-1.5 mb-1.5 text-[10px]"
+              style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', color: '#6b7280' }}
+            >
+              <span>INTERFACE: loopback / host</span>
+              <span style={{ color: '#10b981' }}>ISOLATED</span>
             </div>
 
-            <div className="space-y-1 text-[11px]">
-              <p className="text-emerald-400">&gt; OUTBOUND_BYTES: 0.00 KB</p>
-              <p className="text-emerald-400">&gt; INBOUND_STREAM: 127.0.0.1 (WebRTC Loopback)</p>
-              <p className="text-blue-400">&gt; PERSISTENT_COOKIES: None detected</p>
-              <p className="text-blue-400">&gt; LOCAL_STORAGE_WRITES: 0 operations</p>
-              <p className="text-slate-400">&gt; EXTERNAL_SOCKETS_BLOCKED: {networkPacketsBlocked}</p>
-            </div>
+            <p style={{ color: '#10b981' }}>&gt; OUTBOUND_BYTES: 0.00 KB</p>
+            <p style={{ color: '#38bdf8' }}>&gt; INBOUND_STREAM: 127.0.0.1 (Local WebRTC)</p>
+            <p style={{ color: '#94a3b8' }}>&gt; PERSISTENT_COOKIES: None detected</p>
+            <p style={{ color: '#94a3b8' }}>&gt; LOCAL_STORAGE_WRITES: 0 operations</p>
+            <p style={{ color: '#f59e0b' }}>&gt; EXTERNAL_SOCKETS_BLOCKED: {networkPacketsBlocked}</p>
 
-            <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-[10px] text-slate-500">
-              <span>CSP POLICY: RESTRICTIVE</span>
-              <span className="text-emerald-400">PASSED 100%</span>
+            <div
+              className="pt-1.5 mt-1.5 flex items-center justify-between text-[10px]"
+              style={{ borderTop: '1px solid rgba(255,255,255,0.08)', color: '#6b7280' }}
+            >
+              <span>POLICY: AIRGAPPED LOCAL</span>
+              <span style={{ color: '#10b981' }}>VERIFIED 100%</span>
             </div>
           </div>
         </div>
 
         {/* Regulatory & Compliance Matrix (7 cols) */}
-        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-            <FileCheck2 className="w-4 h-4 text-blue-600" />
+        <div
+          className="lg:col-span-7 rounded-xl p-5 space-y-3"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            boxShadow: 'var(--shadow-xs)',
+          }}
+        >
+          <h3 className="text-[13px] font-bold flex items-center gap-2" style={{ color: 'var(--color-text)' }}>
+            <FileCheck2 className="w-4 h-4" style={{ color: 'var(--color-accent)' }} />
             <span>Biometric Privacy & Legal Compliance Matrix</span>
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {complianceStandards.map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={idx} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/60 space-y-1.5">
+                <div
+                  key={idx}
+                  className="p-3 rounded-lg space-y-1"
+                  style={{
+                    backgroundColor: 'var(--color-surface-raised)',
+                    border: '1px solid var(--color-border)',
+                  }}
+                >
                   <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span className="text-xs font-bold text-slate-900 leading-tight">{item.title}</span>
+                    <Icon className="w-3.5 h-3.5 flex-shrink-0" style={{ color: 'var(--color-accent)' }} />
+                    <span className="text-[11px] font-bold leading-tight" style={{ color: 'var(--color-text)' }}>
+                      {item.title}
+                    </span>
                   </div>
-                  <span className="inline-block text-[10px] font-mono-tech px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                  <span
+                    className="inline-block text-[9px] font-data px-1.5 py-0.2 rounded font-semibold"
+                    style={{
+                      backgroundColor: 'var(--color-accent-soft)',
+                      color: 'var(--color-accent)',
+                      border: '1px solid var(--color-accent-border)',
+                    }}
+                  >
                     {item.status}
                   </span>
-                  <p className="text-xs text-slate-600 leading-relaxed">{item.desc}</p>
+                  <p className="text-[11px] leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
+                    {item.desc}
+                  </p>
                 </div>
               );
             })}

@@ -25,7 +25,7 @@ export const MeshCanvas: React.FC<MeshCanvasProps> = ({
   isWebcamActive,
   videoRef,
   width = 640,
-  height = 480,
+  height = 440,
   isBackendConnected = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -39,25 +39,30 @@ export const MeshCanvas: React.FC<MeshCanvasProps> = ({
     ctx.clearRect(0, 0, width, height);
 
     if (isWebcamActive && videoRef?.current && videoRef.current.readyState >= 2) {
+      // Draw webcam feed (mirrored)
       ctx.save();
       ctx.translate(width, 0);
       ctx.scale(-1, 1);
       ctx.drawImage(videoRef.current, 0, 0, width, height);
       ctx.restore();
-      ctx.fillStyle = 'rgba(15, 23, 42, 0.12)';
+      // Subtle dark overlay for readability
+      ctx.fillStyle = 'rgba(10, 15, 28, 0.08)';
       ctx.fillRect(0, 0, width, height);
     } else {
-      // Clean dark background
-      const grad = ctx.createRadialGradient(width / 2, height / 2, 60, width / 2, height / 2, width / 1.4);
-      grad.addColorStop(0, '#1e293b');
-      grad.addColorStop(1, '#0f172a');
+      // Dark background gradient
+      const grad = ctx.createRadialGradient(
+        width / 2, height / 2, 50,
+        width / 2, height / 2, width / 1.3
+      );
+      grad.addColorStop(0, '#1a2035');
+      grad.addColorStop(1, '#0d1120');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, width, height);
 
-      // Subtle grid
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+      // Grid
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
       ctx.lineWidth = 1;
-      const step = 40;
+      const step = 32;
       for (let x = 0; x < width; x += step) {
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
       }
@@ -73,14 +78,15 @@ export const MeshCanvas: React.FC<MeshCanvasProps> = ({
     });
     const mapped = points.map(px);
 
+    // ── Mesh rendering ────────────────────────────────────────
     if (showMesh) {
-      // Mesh wireframe
-      ctx.lineWidth = 0.5;
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      // Wireframe triangles
+      ctx.lineWidth = 0.4;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
       ctx.beginPath();
-      for (let i = 0; i < mapped.length; i += 3) {
-        if (i + 2 < mapped.length) {
-          const [p1, p2, p3] = [mapped[i], mapped[i + 1], mapped[i + 2]];
+      for (let i = 0; i < mapped.length - 2; i += 3) {
+        const [p1, p2, p3] = [mapped[i], mapped[i + 1], mapped[i + 2]];
+        if (p1 && p2 && p3) {
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(p2.x, p2.y);
           ctx.lineTo(p3.x, p3.y);
@@ -89,40 +95,40 @@ export const MeshCanvas: React.FC<MeshCanvasProps> = ({
       }
       ctx.stroke();
 
-      // Face contour
-      const contour = mapped.filter(p => p.region === 'contour');
+      // Face contour — bright blue
+      const contour = mapped.filter((p) => p.region === 'contour');
       if (contour.length > 0) {
-        ctx.strokeStyle = 'rgba(59, 130, 246, 0.7)';
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = 'rgba(59, 130, 246, 0.75)';
+        ctx.lineWidth = 1.4;
         ctx.beginPath();
         ctx.moveTo(contour[0].x, contour[0].y);
-        contour.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+        contour.slice(1).forEach((p) => ctx.lineTo(p.x, p.y));
         ctx.closePath();
         ctx.stroke();
       }
 
-      // Eyes
-      ['leftEye', 'rightEye'].forEach(region => {
-        const eyePts = mapped.filter(p => p.region === region);
-        if (eyePts.length > 0) {
+      // Eyes — sky blue
+      ['leftEye', 'rightEye'].forEach((region) => {
+        const eye = mapped.filter((p) => p.region === region);
+        if (eye.length > 0) {
           ctx.strokeStyle = 'rgba(96, 165, 250, 0.9)';
-          ctx.lineWidth = 1.2;
+          ctx.lineWidth = 1.3;
           ctx.beginPath();
-          ctx.moveTo(eyePts[0].x, eyePts[0].y);
-          eyePts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+          ctx.moveTo(eye[0].x, eye[0].y);
+          eye.slice(1).forEach((p) => ctx.lineTo(p.x, p.y));
           ctx.closePath();
           ctx.stroke();
         }
       });
 
-      // Lips
-      const lips = mapped.filter(p => p.region === 'lips');
+      // Lips — white
+      const lips = mapped.filter((p) => p.region === 'lips');
       if (lips.length > 0) {
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.65)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(lips[0].x, lips[0].y);
-        lips.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+        lips.slice(1).forEach((p) => ctx.lineTo(p.x, p.y));
         ctx.closePath();
         ctx.stroke();
       }
@@ -130,103 +136,171 @@ export const MeshCanvas: React.FC<MeshCanvasProps> = ({
       // Landmark dots
       mapped.forEach((p, idx) => {
         const isKey = idx % 8 === 0 || p.region === 'leftIris' || p.region === 'rightIris';
+        const isIris = p.region === 'leftIris' || p.region === 'rightIris';
         ctx.fillStyle = isKey
-          ? (p.region.includes('Iris') ? '#60a5fa' : 'rgba(255,255,255,0.9)')
-          : 'rgba(255,255,255,0.35)';
+          ? isIris ? '#38bdf8' : 'rgba(255,255,255,0.88)'
+          : 'rgba(255,255,255,0.28)';
         ctx.beginPath();
-        ctx.arc(p.x, p.y, isKey ? 1.5 : 0.8, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, isKey ? 1.5 : 0.7, 0, Math.PI * 2);
         ctx.fill();
       });
     }
 
+    // ── Iris tracking ─────────────────────────────────────────
     if (showIris) {
-      ['leftIris', 'rightIris'].forEach(region => {
-        const iris = mapped.filter(p => p.region === region);
+      ['leftIris', 'rightIris'].forEach((region) => {
+        const iris = mapped.filter((p) => p.region === region);
         if (iris.length > 0) {
           const c = iris[0];
+          // Outer ring
           ctx.strokeStyle = '#38bdf8';
           ctx.lineWidth = 1.5;
-          ctx.beginPath(); ctx.arc(c.x, c.y, 8, 0, Math.PI * 2); ctx.stroke();
+          ctx.beginPath(); ctx.arc(c.x, c.y, 9, 0, Math.PI * 2); ctx.stroke();
+          // Gaze vector
           const dx = headPose.yaw * 1.8;
           const dy = headPose.pitch * 1.5;
-          ctx.strokeStyle = '#0284c7';
+          ctx.strokeStyle = '#0ea5e9';
           ctx.lineWidth = 1.5;
           ctx.beginPath(); ctx.moveTo(c.x, c.y); ctx.lineTo(c.x + dx, c.y + dy); ctx.stroke();
-          ctx.fillStyle = '#fff';
+          // Center dot
+          ctx.fillStyle = '#ffffff';
           ctx.beginPath(); ctx.arc(c.x, c.y, 2, 0, Math.PI * 2); ctx.fill();
         }
       });
     }
 
+    // ── Head pose axes ────────────────────────────────────────
     if (showPoseAxes) {
-      const nose = mapped.filter(p => p.region === 'nose');
+      const nose = mapped.filter((p) => p.region === 'nose');
       if (nose.length > 0) {
-        const origin = nose[nose.length - 1];
-        const len = 42;
+        const origin = nose[Math.floor(nose.length / 2)];
+        const len = 44;
         const ry = (headPose.yaw * Math.PI) / 180;
         const rp = (headPose.pitch * Math.PI) / 180;
         const rr = (headPose.roll * Math.PI) / 180;
 
-        // X axis (roll) — red
+        // X-axis (roll) — rose red
         ctx.strokeStyle = '#f43f5e'; ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y);
-        ctx.lineTo(origin.x + Math.cos(rr) * len, origin.y + Math.sin(rr) * len); ctx.stroke();
+        ctx.lineTo(origin.x + Math.cos(rr) * len, origin.y + Math.sin(rr) * len);
+        ctx.stroke();
 
-        // Y axis (roll perp) — green
+        // Y-axis (roll perp) — emerald
         ctx.strokeStyle = '#10b981'; ctx.lineWidth = 2.5;
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y);
-        ctx.lineTo(origin.x - Math.sin(rr) * len, origin.y + Math.cos(rr) * len); ctx.stroke();
+        ctx.lineTo(origin.x - Math.sin(rr) * len, origin.y + Math.cos(rr) * len);
+        ctx.stroke();
 
-        // Z axis (depth/focus) — blue
+        // Z-axis (depth/focus) — blue
         ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 3;
         ctx.beginPath(); ctx.moveTo(origin.x, origin.y);
-        ctx.lineTo(origin.x + Math.sin(ry) * len * 1.4, origin.y - Math.sin(rp) * len * 1.4); ctx.stroke();
+        ctx.lineTo(
+          origin.x + Math.sin(ry) * len * 1.5,
+          origin.y - Math.sin(rp) * len * 1.5
+        );
+        ctx.stroke();
 
-        ctx.fillStyle = '#fff';
+        ctx.lineCap = 'butt';
+        // Origin dot
+        ctx.fillStyle = '#ffffff';
         ctx.beginPath(); ctx.arc(origin.x, origin.y, 3, 0, Math.PI * 2); ctx.fill();
       }
     }
 
+    // ── Bounding box ──────────────────────────────────────────
     if (showBoundingBox) {
-      const minX = Math.min(...mapped.map(p => p.x)) - 16;
-      const maxX = Math.max(...mapped.map(p => p.x)) + 16;
-      const minY = Math.min(...mapped.map(p => p.y)) - 20;
-      const maxY = Math.max(...mapped.map(p => p.y)) + 16;
+      const xs = mapped.map((p) => p.x);
+      const ys = mapped.map((p) => p.y);
+      const minX = Math.min(...xs) - 18;
+      const maxX = Math.max(...xs) + 18;
+      const minY = Math.min(...ys) - 24;
+      const maxY = Math.max(...ys) + 18;
       const bw = maxX - minX;
       const bh = maxY - minY;
 
-      ctx.strokeStyle = 'rgba(59, 130, 246, 0.35)';
+      // Faint rect
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
       ctx.lineWidth = 1;
       ctx.strokeRect(minX, minY, bw, bh);
 
-      const cLen = 12;
-      ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2;
-      [[minX, minY], [maxX, minY], [minX, maxY], [maxX, maxY]].forEach(([cx, cy], idx) => {
-        const sx = idx % 2 === 0 ? 1 : -1;
-        const sy = idx < 2 ? 1 : -1;
+      // Corner marks
+      const cLen = 14;
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.9)';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      [
+        [minX, minY,  1,  1],
+        [maxX, minY, -1,  1],
+        [minX, maxY,  1, -1],
+        [maxX, maxY, -1, -1],
+      ].forEach(([cx, cy, sx, sy]) => {
         ctx.beginPath();
-        ctx.moveTo(cx, cy + sy * cLen); ctx.lineTo(cx, cy); ctx.lineTo(cx + sx * cLen, cy);
+        ctx.moveTo(cx, (cy as number) + (sy as number) * cLen);
+        ctx.lineTo(cx, cy as number);
+        ctx.lineTo((cx as number) + (sx as number) * cLen, cy as number);
         ctx.stroke();
       });
+      ctx.lineCap = 'butt';
 
-      ctx.fillStyle = 'rgba(59,130,246,0.8)';
+      // Label
+      ctx.fillStyle = 'rgba(59,130,246,0.85)';
       ctx.font = '10px "JetBrains Mono", monospace';
       ctx.fillText('Face', minX + 4, minY - 5);
     }
-  }, [points, headPose, showMesh, showIris, showPoseAxes, showBoundingBox, isWebcamActive, videoRef, width, height]);
+  }, [
+    points, headPose, showMesh, showIris, showPoseAxes, showBoundingBox,
+    isWebcamActive, videoRef, width, height,
+  ]);
 
   return (
-    <div className="relative w-full overflow-hidden rounded-xl border border-slate-700/60 bg-slate-950 shadow-md">
-      <canvas ref={canvasRef} width={width} height={height} className="block w-full h-auto object-cover" />
+    <div
+      className="relative w-full overflow-hidden rounded-xl shadow-md"
+      style={{
+        backgroundColor: '#0d1120',
+        border: '1px solid rgba(255,255,255,0.08)',
+      }}
+      role="img"
+      aria-label="Facial landmark mesh visualization canvas"
+    >
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        className="block w-full h-auto"
+      />
 
-      {/* Minimal status badge */}
-      <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm border border-white/10 px-2 py-1 rounded-md text-[10px] text-slate-300">
-        <span className={`w-1.5 h-1.5 rounded-full ${isBackendConnected ? 'bg-green-400 pulse-live' : 'bg-blue-400 pulse-live'}`} />
+      {/* Top-left status badge */}
+      <div
+        className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-medium"
+        style={{
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          color: 'rgba(255,255,255,0.8)',
+        }}
+        role="status"
+        aria-live="polite"
+      >
+        <span
+          className={`w-1.5 h-1.5 rounded-full ${
+            isBackendConnected ? 'bg-emerald-400 pulse-live' : 'bg-blue-400 pulse-live'
+          }`}
+        />
         <span>{isBackendConnected ? 'Live inference' : 'Simulation'}</span>
       </div>
 
-      <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm border border-white/10 px-2 py-1 rounded-md text-[10px] text-slate-400">
-        468 pts
+      {/* Top-right landmark count */}
+      <div
+        className="absolute top-3 right-3 px-2 py-1 rounded-lg text-[10px] font-data"
+        style={{
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          color: 'rgba(255,255,255,0.5)',
+        }}
+      >
+        {points?.length ?? 0} pts
       </div>
     </div>
   );

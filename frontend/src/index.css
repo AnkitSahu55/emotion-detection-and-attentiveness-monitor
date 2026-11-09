@@ -1,32 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
+    /* Layout */
+    --sidebar-width: 240px;
+    --sidebar-collapsed-width: 64px;
+    --topbar-height: 56px;
+
+    /* Single neutral ramp (Ink Light from unslop tokens) */
+    --color-bg:              #f5f7fa;
+    --color-surface:         #ffffff;
+    --color-surface-raised:  #eceff4;
+    --color-surface-hover:   #e5e9f0;
+
+    --color-border:          rgba(17, 24, 39, 0.08);
+    --color-border-subtle:   rgba(17, 24, 39, 0.04);
+
+    --color-text:            #111827;
+    --color-text-secondary:  #4b5565;
+    --color-text-muted:      #6b7487;
+
+    /* Accent: cobalt blue (clinical & precise, >=4.5:1 on light) */
+    --color-accent:          #1d4ed8;
+    --color-accent-hover:    #1e40af;
+    --color-accent-soft:     #eff6ff;
+    --color-accent-border:   rgba(29, 78, 216, 0.18);
+
+    /* Semantic */
+    --color-success:         #16a34a;
+    --color-success-soft:    #f0fdf4;
+    --color-warning:         #d97706;
+    --color-warning-soft:    #fffbeb;
+    --color-danger:          #dc2626;
+    --color-danger-soft:     #fef2f2;
+
+    /* Dark sidebar (Ink Dark from unslop tokens) */
+    --color-sidebar-bg:        #0b0d14;
+    --color-sidebar-card:      #11141c;
+    --color-sidebar-raised:    #1a1e28;
+    --color-sidebar-text:      #eef0f5;
+    --color-sidebar-secondary: #a3a9b8;
+    --color-sidebar-muted:     #7a8296;
+    --color-sidebar-active-bg: rgba(238, 240, 245, 0.08);
+    --color-sidebar-hover:     rgba(238, 240, 245, 0.04);
+    --color-sidebar-border:    rgba(238, 240, 245, 0.08);
+
+    /* Typography */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
 
-    --color-bg: #f9fafb;
-    --color-surface: #ffffff;
-    --color-surface-raised: #f3f4f6;
-    --color-border: #e5e7eb;
-    --color-border-subtle: #f3f4f6;
+    /* Nested radii following unslop formula */
+    --radius-sm:   6px;
+    --radius-md:   8px;
+    --radius-lg:   12px;
+    --radius-xl:   16px;
+    --radius-full: 9999px;
 
-    --color-text: #111827;
-    --color-text-secondary: #6b7280;
-    --color-text-muted: #9ca3af;
+    /* Soft neutral shadows */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
 
-    --color-blue: #2563eb;
-    --color-blue-light: #eff6ff;
-    --color-blue-border: #bfdbfe;
-
-    --color-green: #059669;
-    --color-amber: #d97706;
-    --color-red: #dc2626;
+    /* Motion token: one standard ease-out curve */
+    --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   *, *::before, *::after {
     box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   body {
@@ -39,11 +84,12 @@
   }
 }
 
-/* Monospace — only for actual data values */
-.font-data {
+/* Utility classes */
+.font-data,
+.font-mono-tech {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 /* Custom scrollbar */
@@ -52,19 +98,47 @@
 ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
 
-/* Live pulse indicator */
+/* Pulse animation strictly for live active status */
 @keyframes live-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.35; }
 }
 .pulse-live {
   animation: live-pulse 1.8s ease-in-out infinite;
 }
 
-/* Subtle background pattern */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+/* Clean one-time entrance */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 180ms var(--ease-standard) forwards;
+}
+
+/* Grid layout with sidebar */
+.app-layout {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: var(--topbar-height) 1fr;
+  min-height: 100vh;
+}
+
+.app-layout.sidebar-collapsed {
+  grid-template-columns: var(--sidebar-collapsed-width) 1fr;
+}
+
+/* Standard focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

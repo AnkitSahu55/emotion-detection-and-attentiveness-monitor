@@ -1,4 +1,4 @@
-export type PageView = 'home' | 'specs' | 'privacy' | 'docs';
+export type PageView = 'home' | 'specs' | 'privacy' | 'docs' | 'analytics' | 'settings';
 
 export type AttentivenessState = 'optimal' | 'alert' | 'distracted' | 'fatigued';
 
@@ -13,15 +13,15 @@ export type EmotionType =
   | 'Confused';
 
 export interface HeadPose {
-  yaw: number;     // Left/Right rotation (-45 to +45 deg)
-  pitch: number;   // Up/Down tilt (-30 to +30 deg)
-  roll: number;    // Lateral tilt (-25 to +25 deg)
+  yaw: number;
+  pitch: number;
+  roll: number;
 }
 
 export interface LandmarkPoint {
-  x: number;       // 0 to 1 normalized
-  y: number;       // 0 to 1 normalized
-  z: number;       // depth relative to face center
+  x: number;
+  y: number;
+  z: number;
   id: number;
   region: 'mesh' | 'contour' | 'leftEye' | 'rightEye' | 'leftIris' | 'rightIris' | 'lips' | 'nose' | 'eyebrows';
 }
@@ -36,17 +36,17 @@ export interface FaceMetrics {
   isBlinking: boolean;
   blinkCount: number;
   blinkRateBpm: number;
-  perclos: number; // Percentage of Eye Closure (0-100%)
+  perclos: number;
   headPose: HeadPose;
-  attentivenessScore: number; // 0 to 100
+  attentivenessScore: number;
   attentivenessState: AttentivenessState;
   dominantEmotion: EmotionType;
-  emotionConfidence: number; // 0 to 100
+  emotionConfidence: number;
   emotionProbabilities: Record<EmotionType, number>;
-  valence: number; // -1 (unpleasant) to +1 (pleasant)
-  arousal: number; // 0 (calm) to 1 (excited)
-  cpuUtilization: number; // < 30%
-  frameLatencyMs: number; // < 60ms
+  valence: number;
+  arousal: number;
+  cpuUtilization: number;
+  frameLatencyMs: number;
   fps: number;
   meshPoints: LandmarkPoint[];
 }
@@ -68,4 +68,14 @@ export interface CsvLogEntry {
   emotion_confidence: number;
   inference_latency_ms: number;
   cpu_usage_pct: number;
+}
+
+export interface SessionSummary {
+  id: string;
+  startedAt: string;
+  durationSeconds: number;
+  avgAttentiveness: number;
+  dominantEmotion: EmotionType;
+  blinkCount: number;
+  frameCount: number;
 }

@@ -1,75 +1,104 @@
 import { useState } from 'react';
 import type { PageView } from './types';
-import { Navbar } from './components/Navbar';
-import { HeroSection } from './components/HeroSection';
+import { Sidebar } from './components/Sidebar';
+import { TopBar } from './components/TopBar';
 import { LiveMonitor } from './components/LiveMonitor';
 import { TechnicalSpecs } from './components/TechnicalSpecs';
 import { PrivacySecurity } from './components/PrivacySecurity';
 import { Documentation } from './components/Documentation';
-import { Footer } from './components/Footer';
+import { AnalyticsDashboard } from './components/AnalyticsDashboard';
+import { SettingsPage } from './components/SettingsPage';
+import type { BackendStatus } from './hooks/useBackendStream';
 
 export function App() {
   const [activePage, setActivePage] = useState<PageView>('home');
   const [isCameraActive, setIsCameraActive] = useState(false);
+  const [backendStatus, setBackendStatus] = useState<BackendStatus>('disconnected');
+  const [isUsingBackend, setIsUsingBackend] = useState(false);
+  const [fps, setFps] = useState(0);
 
   const handleToggleCamera = () => {
-    setIsCameraActive(prev => !prev);
-    if (activePage !== 'home') setActivePage('home');
-  };
-
-  const handleOpenLiveMonitor = () => {
-    setActivePage('home');
-    setTimeout(() => {
-      document.getElementById('live-monitor-viewport')?.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
+    setIsCameraActive((prev) => !prev);
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar
+    <div
+      className="app-layout"
+      style={{ minHeight: '100vh' }}
+    >
+      {/* Sidebar — spans both rows */}
+      <Sidebar
         activePage={activePage}
         setActivePage={setActivePage}
         isCameraActive={isCameraActive}
-        onToggleCamera={handleToggleCamera}
-        fps={60}
+        backendStatus={backendStatus}
+        isUsingBackend={isUsingBackend}
       />
 
-      <main className="flex-1">
-        {activePage === 'home' && (
-          <div>
-            <HeroSection
-              onInitializeCamera={handleToggleCamera}
-              isCameraActive={isCameraActive}
-              onOpenLiveMonitor={handleOpenLiveMonitor}
-            />
+      {/* Top bar — col 2, row 1 */}
+      <TopBar
+        activePage={activePage}
+        isCameraActive={isCameraActive}
+        onToggleCamera={handleToggleCamera}
+        backendStatus={backendStatus}
+        isUsingBackend={isUsingBackend}
+        fps={fps}
+      />
 
-            <div id="live-monitor-viewport" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <div className="mb-5">
-                <h2 className="text-lg font-bold text-gray-900">Live Monitor</h2>
-                <p className="text-sm text-gray-400 mt-0.5">
-                  Real-time face mesh, EAR waveform, and emotion classification
-                </p>
-              </div>
-              <LiveMonitor
-                isCameraActive={isCameraActive}
-                onToggleCamera={handleToggleCamera}
-              />
-            </div>
+      {/* Main content — col 2, row 2 */}
+      <main
+        className="overflow-y-auto animate-fade-in"
+        style={{
+          gridColumn: '2',
+          gridRow: '2',
+          backgroundColor: 'var(--color-bg)',
+        }}
+        id="main-content"
+        role="main"
+        aria-label="Page content"
+      >
+        {activePage === 'home' && (
+          <div className="p-6">
+            <LiveMonitor
+              isCameraActive={isCameraActive}
+              onToggleCamera={handleToggleCamera}
+              onStatusChange={setBackendStatus}
+              onBackendChange={setIsUsingBackend}
+              onFpsChange={setFps}
+            />
+          </div>
+        )}
+
+        {activePage === 'analytics' && (
+          <div className="p-6">
+            <AnalyticsDashboard />
           </div>
         )}
 
         {activePage === 'specs' && (
-          <div className="px-4 sm:px-6 lg:px-8"><TechnicalSpecs /></div>
+          <div className="p-6">
+            <TechnicalSpecs />
+          </div>
         )}
+
         {activePage === 'privacy' && (
-          <div className="px-4 sm:px-6 lg:px-8"><PrivacySecurity /></div>
+          <div className="p-6">
+            <PrivacySecurity />
+          </div>
         )}
+
         {activePage === 'docs' && (
-          <div className="px-4 sm:px-6 lg:px-8"><Documentation /></div>
+          <div className="p-6">
+            <Documentation />
+          </div>
+        )}
+
+        {activePage === 'settings' && (
+          <div className="p-6">
+            <SettingsPage />
+          </div>
         )}
       </main>
-
-      <Footer setActivePage={setActivePage} />
     </div>
   );
 }
